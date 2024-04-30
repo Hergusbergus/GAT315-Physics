@@ -63,4 +63,4 @@ void DestroyBody(Body* body)
 	free(body);
 }
 
-// Partial aid by ChatGPT. Source: 
+// Partial aid by ChatGPT. Source: https://chat.openai.com/share/3f1049f8-e717-4745-b7b2-b4c9582a949e
