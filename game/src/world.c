@@ -1,40 +1,53 @@
 #include "world.h"
-
+#include "body.h"
 #include <stdlib.h>
 #include <assert.h>
+#include <string.h>
 
-Body* bodies = NULL;
-int bodyCount = 0;
+ncBody* ncBodies = NULL;
+int ncBodyCount = 0;
+Vector2 ncGravity;
 
-Body* CreateBody()
+ncBody* CreateBody(Vector2 position, float mass, ncBodyType bodyType)
 {
 	// Allocate memory for new Body
-	Body* body = (Body*)malloc(sizeof(Body));
+	ncBody* body = (ncBody*)malloc(sizeof(ncBody));
 	
 	// Check if allocation is successful
 	assert(body);
-	
-	// Initialize 'prev' to NULL and 'next' to the head of the list
-	body->prev = NULL;
-	body->next = bodies;
-	
-	// If list is not empty, update 'prev' of existing head
-	if (bodies != NULL) 
-	{
-		bodies->prev = body;
-	}
-	
-	// Update head of the list to new Body
-	bodies = body;
-	
-	// Increment body count
-	bodyCount++;
+
+	memset(body, 0, sizeof(ncBody));
+	body->position = position;
+	body->mass = mass;
+	body->inverseMass = (bodyType == BT_DYNAMIC) ? 1 / mass : 0;
+	body->bodyType = bodyType;
 	
 	// Return new Body
 	return body;
 }
 
-void DestroyBody(Body* body)
+void AddBody(ncBody* body)
+{
+	assert(body);
+
+	// Initialize 'prev' to NULL and 'next' to the head of the list
+	body->prev = NULL;
+	body->next = ncBodies;
+
+	// If list is not empty, update 'prev' of existing head
+	if (ncBodies != NULL)
+	{
+		ncBodies->prev = body;
+	}
+
+	// Update head of the list to new Body
+	ncBodies = body;
+
+	// Increment body count
+	ncBodyCount++;
+}
+
+void DestroyBody(ncBody* body)
 {
 	// Assert if provided Body is not NULL
 	assert(body);
@@ -52,12 +65,12 @@ void DestroyBody(Body* body)
 	}
 	
 	// If body is the head, update head to 'body->next'
-	if (bodies == body) {
-		bodies = body->next;
+	if (ncBodies == body) {
+		ncBodies = body->next;
 	}
 	
 	// Decrement body count
-	bodyCount--;
+	ncBodyCount--;
 	
 	// Free the body
 	free(body);
