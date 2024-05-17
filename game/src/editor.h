@@ -3,9 +3,10 @@
 
 typedef struct ncEditorData
 {
-	float MassMinValue;
-	float MassMaxValue;
-	float GravitationValue;
+    float GravityValue;
+    float GravitationValue;
+    int BodyTypeActive;
+    float MassValue;
 } ncEditorData_t;
 
 extern ncEditorData_t ncEditorData;

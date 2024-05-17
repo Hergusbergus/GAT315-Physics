@@ -55,11 +55,14 @@ int main(void)
 		}
 
 		// create body
-		if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+		if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) /*|| (IsMouseButtonDown(MOUSE_BUTTON_LEFT && IsKeyDown(KEY_LEFT_CONTROL)))*/)
 		{
-			ncBody* body = CreateBody(ConvertScreenToWorld(position), GetRandomFloatValue(ncEditorData.MassMinValue, ncEditorData.MassMaxValue), BT_DYNAMIC);
+			ncBody* body = CreateBody(ConvertScreenToWorld(position), ncEditorData.MassValue, ncEditorData.BodyTypeActive);
 			body->damping = 2.5f;
+			body->gravityScale = -ncEditorData.GravityValue;
 			body->color = (Color){ GetRandomValue(0, 255), GetRandomValue(0, 255), GetRandomValue(0, 255), 255 };
+			body->restitution = 0.8f;
+
 			AddBody(body);
 		}
 
@@ -93,6 +96,8 @@ int main(void)
 		// Collision
 		ncContact_t* contacts = NULL;
 		CreateContacts(ncBodies, &contacts);
+		SeparateContacts(contacts);
+		ResolveContacts(contacts);
 
 		// Render
 		BeginDrawing();

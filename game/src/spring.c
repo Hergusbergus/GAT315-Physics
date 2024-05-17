@@ -70,7 +70,7 @@ void DestroySpring(ncSpring_t* spring)
 
 void ApplySpringForce(ncSpring_t* springs)
 {
-	for (ncSpring_t* spring = springs; spring; spring->next)
+	for (ncSpring_t* spring = springs; spring; spring = spring->next)
 	{
 		Vector2 direction = Vector2Subtract(spring->body1->position, spring->body2->position);
 		if (direction.x == 0 && direction.y == 0)

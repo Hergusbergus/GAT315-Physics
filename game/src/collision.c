@@ -69,8 +69,57 @@ ncContact_t* GenerateContact(ncBody* body1, ncBody* body2)
 
 void SeparateContacts(ncContact_t* contacts)
 {
+	// Iterate through each contact in the contacts list
+	for (ncContact_t* contact = contacts; contact; contact = contact->next)
+	{
+		// Calculate the total inverse mass of the two bodies involved in the contact
+		float totalInverseMass = contact->body1->inverseMass + contact->body2->inverseMass;
+
+		// Calculate the separation vector to move the bodies apart
+		// Multiplying the contact normal by the depth divided by the total inverse mass
+		Vector2 separation = Vector2Scale(contact->normal, contact->depth / totalInverseMass);
+
+		// Move body1 along the separation vector according to its inverse mass
+		contact->body1->position = Vector2Add(contact->body1->position, Vector2Scale(separation, contact->body1->inverseMass));
+
+		// Move body2 along the opposite direction of the separation vector
+		// according to its inverse mass
+		contact->body2->position = Vector2Add(contact->body2->position, Vector2Scale(separation, -contact->body2->inverseMass));
+	}
 }
 
 void ResolveContacts(ncContact_t* contacts)
 {
+	// Iterate through each contact in the contacts list
+	for (ncContact_t* contact = contacts; contact; contact = contact->next)
+	{
+		// Calculate the relative velocity of the two bodies at the contact point
+		Vector2 rv = Vector2Subtract(contact->body1->velocity, contact->body2->velocity);
+
+		// Calculate the velocity along the contact normal
+		float nv = Vector2DotProduct(rv, contact->normal);
+
+		// Check if the relative velocity is separating the bodies
+		if (nv > 0)
+		{
+			// If relative velocity is separating, no action is needed
+			// (objects are moving apart, no collision)
+			continue;
+		}
+
+		// Calculate the total inverse mass of the two bodies involved in the contact
+		float totalInverseMass = contact->body1->inverseMass + contact->body2->inverseMass;
+
+		// Calculate the impulse magnitude to apply to resolve the collision
+		// using the coefficient of restitution and the relative velocity
+		float impulseMagnitude = -(1 + contact->restitution) * nv / totalInverseMass;
+
+		// Calculate the impulse vector along the contact normal
+		Vector2 impulse = Vector2Scale(contact->normal, impulseMagnitude);
+
+		// Apply the impulse to the bodies to resolve the collision
+		// by changing their velocities
+		ApplyForce(contact->body1, impulse, FM_IMPULSE);
+		ApplyForce(contact->body2, Vector2Negate(impulse), FM_IMPULSE);
+	}
 }
