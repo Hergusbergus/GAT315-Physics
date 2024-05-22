@@ -11,9 +11,9 @@ ncEditorData_t ncEditorData;
 
 Rectangle editorRect;
 
-Vector2 anchor01 = { 672, 56 };
-Vector2 anchor02 = { 728, 120 };
-Vector2 anchor03 = { 728, 360 };
+Vector2 anchor01 = { 1024, 32 };
+Vector2 anchor02 = { 1040, 80 };
+Vector2 anchor03 = { 1040, 280 };
 
 bool EditorBoxActive = true;
 
@@ -36,14 +36,16 @@ void DrawEditor()
 {
     if (EditorBoxActive)
     {
-        EditorBoxActive = !GuiWindowBox((Rectangle) { anchor01.x + 0, anchor01.y + 0, 256, 656 }, "Editor");
-        GuiGroupBox((Rectangle) { anchor02.x + 0, anchor02.y + 8, 344, 176 }, "Body");
-        GuiGroupBox((Rectangle) { anchor03.x + 0, anchor03.y + 8, 344, 208 }, "World");
-        GuiSliderBar((Rectangle) { anchor03.x + 96, anchor03.y + 48, 120, 16 }, "Gravity", NULL, & ncEditorData.GravityValue, 0, 100);
-        GuiSliderBar((Rectangle) { anchor03.x + 96, anchor03.y + 88, 120, 16 }, "Gravitation", NULL, & ncEditorData.GravitationValue, 0, 1);
-        GuiComboBox((Rectangle) { anchor02.x + 32, anchor02.y + 32, 128, 32 }, "Dynamic;Kinematic;Static", & ncEditorData.BodyTypeActive);
-        GuiSliderBar((Rectangle) { anchor02.x + 112, anchor02.y + 112, 120, 16 }, "Mass", NULL, & ncEditorData.MassValue, 0, 1);
-        GuiSliderBar((Rectangle) { anchor01.x + 120, anchor01.y + 168, 120, 16 }, "Gravity Scale", EDITOR_DATA(ncEditorData.GravityValue), 0, 10);
+        EditorBoxActive = !GuiWindowBox((Rectangle) { anchor01.x, anchor01.y, 256, 600 }, "Editor");
+
+        GuiGroupBox((Rectangle) { anchor02.x, anchor02.y, 200, 100 }, "Body");
+        GuiComboBox((Rectangle) { anchor02.x + 20, anchor02.y + 32, 160, 32 }, "Dynamic;Kinematic;Static", & ncEditorData.BodyTypeActive);
+        GuiSliderBar((Rectangle) { anchor02.x + 20, anchor02.y + 72, 160, 16 }, "Mass", NULL, & ncEditorData.MassValue, 0, 1);
+
+        GuiGroupBox((Rectangle) { anchor03.x, anchor03.y, 200, 150 }, "World");
+        GuiSliderBar((Rectangle) { anchor03.x + 20, anchor03.y + 32, 160, 16 }, "Gravity", NULL, & ncEditorData.GravityValue, 0, 100);
+        GuiSliderBar((Rectangle) { anchor03.x + 20, anchor03.y + 72, 160, 16 }, "Gravitation", NULL, & ncEditorData.GravitationValue, 0, 1);
+        GuiSliderBar((Rectangle) { anchor03.x + 20, anchor03.y + 112, 160, 16 }, "Gravity Scale", NULL, & ncEditorData.GravityValue, 0, 10);
     }
 }
 

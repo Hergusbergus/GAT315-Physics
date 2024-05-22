@@ -125,7 +125,11 @@ int main(void)
 			ApplyGravitationForce(ncBodies, ncEditorData.GravitationValue);
 			ApplySpringForce(ncSprings);
 
-			Step(ncBodies, fixedTimestep);
+			// Update bodies
+			for (ncBody* body = ncBodies; body; body = body->next)
+			{
+				Step(body, dt);
+			}
 
 			// Collision				
 			DestroyAllContacts(contacts);
@@ -133,16 +137,6 @@ int main(void)
 			SeparateContacts(contacts);
 			ResolveContacts(contacts);
 		}
-
-		
-		
-		
-
-		// Update bodies
-		for (ncBody* body = ncBodies; body; body = body->next)
-		{
-			Step(body, dt);
-		}		
 
 		// Render
 		BeginDrawing();
