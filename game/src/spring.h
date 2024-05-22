@@ -1,4 +1,6 @@
 #pragma once
+#include "body.h"
+
 typedef struct ncSpring
 {
 	struct ncBody* body1;
@@ -18,3 +20,4 @@ void DestroySpring(ncSpring_t* spring);
 void DestroyAllSprings();
 
 void ApplySpringForce(ncSpring_t* springs);
+void ApplySpringForcePosition(Vector2 position, ncBody* body, float restLength, float k, float damping);

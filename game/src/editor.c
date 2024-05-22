@@ -1,5 +1,6 @@
 #include "editor.h"
 #define RAYGUI_IMPLEMENTATION
+#define EDITOR_DATA(data) TextFormat("%0.2f", data), &data
 #include "../../raygui/src/raygui.h"
 #include <body.h>
 #include "render.h"
@@ -42,6 +43,7 @@ void DrawEditor()
         GuiSliderBar((Rectangle) { anchor03.x + 96, anchor03.y + 88, 120, 16 }, "Gravitation", NULL, & ncEditorData.GravitationValue, 0, 1);
         GuiComboBox((Rectangle) { anchor02.x + 32, anchor02.y + 32, 128, 32 }, "Dynamic;Kinematic;Static", & ncEditorData.BodyTypeActive);
         GuiSliderBar((Rectangle) { anchor02.x + 112, anchor02.y + 112, 120, 16 }, "Mass", NULL, & ncEditorData.MassValue, 0, 1);
+        GuiSliderBar((Rectangle) { anchor01.x + 120, anchor01.y + 168, 120, 16 }, "Gravity Scale", EDITOR_DATA(ncEditorData.GravityValue), 0, 10);
     }
 }
 

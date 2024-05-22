@@ -34,6 +34,12 @@ int main(void)
 
 	int bodyCount = 0;
 
+	/*Define a fixedTimestep(rate that physics simulator will run at) set it to 1.0f / 50 (or number of frames you want it to run per second)
+		Define a timeAccumulator(accumulates delta time)*/
+
+	float fixedTimestep = 1.0f / 24;
+	float timeAccumulator = GetFrameTime();
+
 	// game loop
 	while (!WindowShouldClose())
 	{
@@ -83,21 +89,60 @@ int main(void)
 			}
 		}
 
-		// Apply force
-		ApplyGravitationForce(ncBodies, ncEditorData.GravitationValue);
-		ApplySpringForce(ncSprings);
+		if (IsKeyDown(KEY_LEFT_ALT))
+		{
+			if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT) && selectedBody) connectBody = selectedBody;
+			if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT) && connectBody) DrawLineBodyToPosition(connectBody, position);
+			if (connectBody)
+			{
+				Vector2 world = ConvertScreenToWorld(position);
+				ApplySpringForcePosition(world, connectBody, 0, 20, 5);
+			}
+		}
+
+		if (IsMouseButtonReleased(MOUSE_BUTTON_RIGHT))
+		{
+			selectedBody = NULL;
+			connectBody = NULL;
+		}
+
+		/*Add delta time to time accumulator
+			Create a while () loop that loops while the time accumulator is greater than or equal to the fixed time step
+			Subtract fixed time step from time accumulator
+			Apply Gravitation and other forces
+			Step() each body, make sure to pass in the fixed time step for the timestep
+			Destroy all contacts
+			Create contacts
+			Separate contacts
+			Resolve contacts*/
+		ncContact_t* contacts = NULL;
+
+		while (timeAccumulator >= fixedTimestep)
+		{
+			timeAccumulator -= fixedTimestep;
+
+			// Apply force
+			ApplyGravitationForce(ncBodies, ncEditorData.GravitationValue);
+			ApplySpringForce(ncSprings);
+
+			Step(ncBodies, fixedTimestep);
+
+			// Collision				
+			DestroyAllContacts(contacts);
+			CreateContacts(ncBodies, &contacts);
+			SeparateContacts(contacts);
+			ResolveContacts(contacts);
+		}
+
+		
+		
+		
 
 		// Update bodies
 		for (ncBody* body = ncBodies; body; body = body->next)
 		{
 			Step(body, dt);
-		}
-
-		// Collision
-		ncContact_t* contacts = NULL;
-		CreateContacts(ncBodies, &contacts);
-		SeparateContacts(contacts);
-		ResolveContacts(contacts);
+		}		
 
 		// Render
 		BeginDrawing();
